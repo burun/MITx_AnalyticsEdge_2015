@@ -1,3 +1,8 @@
+#!/usr/bin/Rscript
+# Date: 08-03-15
+# Author: Liang
+
+
 # Stock dynamics
 
 # Problem 1

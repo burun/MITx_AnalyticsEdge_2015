@@ -1,3 +1,8 @@
+#!/usr/bin/Rscript
+# Date: 07-03-15
+# Author: Liang
+
+
 # Problem 1
 # Problem 1.1 - Loading the Data
 # How many rows of data (observations) are in this dataset?

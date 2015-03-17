@@ -1,3 +1,8 @@
+#!/usr/bin/Rscript
+# Date: 08-03-15
+# Author: Liang
+
+
 # demographics and employment in the united states
 
 # Problem 1
