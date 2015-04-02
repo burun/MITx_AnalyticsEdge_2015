@@ -69,3 +69,57 @@ as.numeric(performance(ROCRpred, "auc")@y.values)
 # PROBLEM 3
 # PROBLEM 3.1 - A "SMART BASELINE"
 # What is the most likely explanation for this difference?
+bivariate = glm(not.fully.paid~int.rate, data=train, family="binomial")
+summary(bivariate)
+
+# PROBLEM 3.2 - A "SMART BASELINE"
+# What is the highest predicted probability of a loan not being paid in full on the testing set?
+pred_in_rate = predict(bivariate, newdata=test, type="response")
+summary(pred_in_rate)
+# With a logistic regression cutoff of 0.5, how many loans would be predicted as not being paid in full on the testing set?
+table(test$not.fully.paid, pred_in_rate > 0.5)
+
+# PROBLEM 3.3 - A "SMART BASELINE"
+# What is the test set AUC of the bivariate model?
+library(ROCR)
+ROCRpred = prediction(pred_in_rate, test$not.fully.paid)
+as.numeric(performance(ROCRpred, "auc")@y.values)
+
+
+# PROBLEM 4
+# PROBLEM 4.1 - COMPUTING THE PROFITABILITY OF AN INVESTMENT
+# How much does a $10 investment with an annual interest rate of 6% pay back after 3 years, using continuous compounding of interest? 
+10*exp(0.06*3)
+
+# PROBLEM 4.2 - COMPUTING THE PROFITABILITY OF AN INVESTMENT
+# What is the profit to the investor if the investment is paid back in full?
+# c * exp(rt) - c
+
+# PROBLEM 4.3 - COMPUTING THE PROFITABILITY OF AN INVESTMENT
+# What is the profit to the investor in this scenario?
+# -c
+
+
+# PROBLEM 5
+# PROBLEM 5.1 - A SIMPLE INVESTMENT STRATEGY
+# What is the maximum profit of a $10 investment in any loan in the testing set?
+test$profit = exp(test$int.rate*3) - 1
+test$profit[test$not.fully.paid == 1] = -1
+summary(test$profit)
+
+
+# PROBLEM 6
+# PROBLEM 6.1 - AN INVESTMENT STRATEGY BASED ON RISK
+# What is the average profit of a $1 investment in one of these high-interest loans?
+highInterest = subset(test, int.rate >= 0.15)
+summary(highInterest$profit)
+# What proportion of the high-interest loans were not paid back in full?
+table(highInterest$not.fully.paid)
+110/(327+110)
+
+# PROBLEM 6.2 - AN INVESTMENT STRATEGY BASED ON RISK
+# What is the profit of the investor, who invested $1 in each of these 100 loans?
+cutoff = sort(highInterest$predicted.risk, decreasing=FALSE)[100]
+selectedLoans = subset(highInterest, predicted.risk <= cutoff)
+sum(selectedLoans$profit)
+table(selectedLoans$not.fully.paid)
