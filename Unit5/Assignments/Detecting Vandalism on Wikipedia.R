@@ -75,4 +75,52 @@ prp(wikiCART)
 # Although it beats the baseline, bag of words is not very predictive for this problem. 
 
 
+# PROBLEM 2
+# PROBLEM 2.1 - PROBLEM-SPECIFIC KNOWLEDGE
+# Based on this new column, how many revisions added a link?
+wikiWords2 = wikiWords
+wikiWords2$HTTP = ifelse(grepl("http",wiki$Added,fixed=TRUE), 1, 0)
+table(wikiWords2$HTTP)
 
+# PROBLEM 2.2 - PROBLEM-SPECIFIC KNOWLEDGE
+# What is the new accuracy of the CART model on the test set, using a threshold of 0.5?
+wikiTrain2 = subset(wikiWords2, spl==TRUE)
+wikiTest2 = subset(wikiWords2, spl==FALSE)
+HTTPCart = rpart(Vandal ~ ., data=wikiTrain2)
+HTTPpred = predict(HTTPCart, newdata=wikiTest2)
+HTTPpred.prob = HTTPpred[,2]
+table(wikiTest2$Vandal, HTTPpred.prob >= 0.5)
+(609+57)/(609+57+488)
+
+############### PROBLEM 2.3 - PROBLEM-SPECIFIC KNOWLEDGE
+# What is the average number of words added?
+wikiWords2$NumWordsAdded = rowSums(as.matrix(dtmAdded))
+wikiWords2$NumWordsRemoved = rowSums(as.matrix(dtmRemoved))
+mean(wikiWords2$NumWordsAdded)
+
+# PROBLEM 2.4 - PROBLEM-SPECIFIC KNOWLEDGE
+# What is the new accuracy of the CART model on the test set?
+wikiTrain3 = subset(wikiWords2, spl==TRUE)
+wikiTest3 = subset(wikiWords2, spl==FALSE)
+wikiCART3 = rpart(Vandal ~ ., data=wikiTrain3, method="class")
+testPredictCART3 = predict(wikiCART3, newdata=wikiTest3, type="class")
+table(wikiTest3$Vandal, testPredictCART3)
+(514+248)/(514+104+297+248)
+
+
+# PROBLEM 3
+# PROBLEM 3.1 - USING NON-TEXTUAL DATA
+# What is the accuracy of the model on the test set?
+wikiWords3 = wikiWords2
+wikiWords3$Minor = wiki$Minor
+wikiWords3$Loggedin = wiki$Loggedin
+wikiTrain4 = subset(wikiWords3, spl==TRUE)
+wikiTest4 = subset(wikiWords3, spl==FALSE)
+wikiCART4 = rpart(Vandal ~ ., data=wikiTrain4, method="class")
+testPredictCART4 = predict(wikiCART4, newdata=wikiTest4, type="class")
+table(wikiTest4$Vandal, testPredictCART4)
+(595+241)/(595+23+304+241)
+
+# PROBLEM 3.2 - USING NON-TEXTUAL DATA
+# Plot the CART tree. How many splits are there in the tree?
+prp(wikiCART4)
